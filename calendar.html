@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Exam Calendar - ExamPro</title>
+		<link
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+			rel="stylesheet" />
+		<link href="style.css" rel="stylesheet" />
+	</head>
+	<body>
+		<!-- Header -->
+		<header class="header">
+			<div class="container">
+				<div class="header-content">
+					<a href="index.html" class="logo">
+						<div class="logo-icon">E</div>
+						<span class="logo-text">EksamCSC</span>
+					</a>
+
+					<nav class="nav">
+						<a href="index.html#features" class="nav-item">
+							<i class="fas fa-layer-group"></i>
+							Feature
+						</a>
+						<a href="practice.html" class="nav-item">
+							<i class="fas fa-clipboard-list"></i>
+							Practice Tests
+						</a>
+						<a href="index.html#donation" class="nav-item">
+							<i class="fas fa-heart"></i>
+							Donation
+						</a>
+						<a href="index.html#faq" class="nav-item">
+							<i class="fas fa-question-circle"></i>
+							Faq
+						</a>
+						<a href="#" class="google-btn">
+							<i class="fab fa-google"></i>
+							Connect with Google
+						</a>
+					</nav>
+				</div>
+			</div>
+		</header>
+
+		<!-- Main Content -->
+		<main class="main-content">
+			<div class="container">
+				<!-- Page Header -->
+				<div class="page-header">
+					<h1 class="page-title">Civil Service Examination Calendar</h1>
+					<p class="page-subtitle">
+						Plan your preparation with our comprehensive calendar of upcoming
+						Civil Service Examinations across the Philippines.
+					</p>
+				</div>
+
+				<!-- Exam Details Section -->
+				<div class="exam-details-section">
+					<div class="section-header">
+						<i class="fas fa-calendar-alt"></i>
+						<h2 class="section-title">Exam Details</h2>
+					</div>
+					<p class="section-subtitle">
+						Select a highlighted date to view exam details
+					</p>
+
+					<!-- Empty State -->
+					<div class="empty-state" id="empty-state">
+						<div class="empty-icon">
+							<i class="fas fa-calendar-alt"></i>
+						</div>
+						<p class="empty-text">
+							Select a highlighted date on the calendar to view exam details
+						</p>
+						<p class="empty-subtext">Important exam dates for 2025</p>
+
+						<div class="exam-dates">
+							<button class="exam-date-btn" onclick="showExamDetails('july')">
+								Tuesday | Thursday, July 1, 3, 8 10, 2025
+							</button>
+							<button class="exam-date-btn" onclick="showExamDetails('august')">
+								Sunday, August 24, 2025
+							</button>
+						</div>
+					</div>
+
+					<!-- Expanded Exam Details -->
+					<div class="exam-details-expanded" id="exam-details">
+						<h3 class="exam-title" id="exam-title">
+							Civil Service Exam (Paper and Pencil Test)
+						</h3>
+						<p class="exam-date" id="exam-date">Sunday, August 24, 2025</p>
+
+						<div class="exam-badges">
+							<span class="exam-badge professional">Professional</span>
+							<span class="exam-badge sub-professional">Sub-Professional</span>
+						</div>
+
+						<div class="deadline-info">
+							<i class="fas fa-clock"></i>
+							<span class="deadline-text" id="deadline-text"
+								>Application Deadline: Thursday, July 24, 2025</span
+							>
+							<div class="countdown-text" id="countdown-text">
+								32 days remaining to apply
+							</div>
+						</div>
+
+						<div class="testing-locations">
+							<h4 class="locations-title">Testing Locations:</h4>
+							<div class="location-tags" id="location-tags">
+								<span class="location-tag">Nationwide</span>
+							</div>
+						</div>
+
+						<div class="exam-description" id="exam-description">
+							Second nationwide schedule for the Civil Service Examination for
+							2025. Both Professional and Sub-Professional level examinations
+							will be conducted. Application must be completed one month before
+							the examination date.
+						</div>
+
+						<button
+							class="prepare-btn"
+							onclick="window.location.href='practice.html'">
+							Prepare for This Exam
+						</button>
+					</div>
+				</div>
+
+				<!-- Exam Preparation Tips -->
+				<div class="tips-section">
+					<h3 class="tips-title">Exam Preparation Tips</h3>
+					<ol class="tips-list">
+						<li>Start preparing at least 3 months before your exam date</li>
+						<li>Take regular practice tests to assess your progress</li>
+						<li>Focus on vocabulary, grammar, and logical reasoning</li>
+						<li>Review Philippine Constitution and government structure</li>
+						<li>Join study groups for collaborative learning</li>
+					</ol>
+				</div>
+
+				<!-- 2025 Civil Service Exam Schedule -->
+				<div class="schedule-section">
+					<h2 class="schedule-title">2025 Civil Service Exam Schedule</h2>
+
+					<div class="exam-cards">
+						<!-- July 2025 Exam -->
+						<div class="exam-card">
+							<div class="exam-card-header">
+								Tuesday | Thursday, July 1, 3, 8, 10, 2025
+							</div>
+							<div class="exam-card-body">
+								<h3 class="exam-card-title">
+									Civil Service Computerized Examination (CSC-COMEX)
+								</h3>
+
+								<div class="exam-card-badges">
+									<span class="exam-badge professional">Professional</span>
+									<span class="exam-badge sub-professional"
+										>Sub-Professional</span
+									>
+								</div>
+
+								<div class="registration-info">
+									<i class="fas fa-clock"></i>
+									<span class="registration-text"
+										>Registration Deadline: On-going</span
+									>
+								</div>
+
+								<div class="testing-centers">
+									<h4 class="centers-title">Testing Centers:</h4>
+									<div class="centers-list">
+										<span class="center-tag">CSC Regional Office VIII</span>
+									</div>
+								</div>
+
+								<div class="exam-card-actions">
+									<button
+										class="action-btn primary"
+										onclick="showExamDetails('july')">
+										View Details
+									</button>
+									<button
+										class="action-btn secondary"
+										onclick="showReminderModal('july')">
+										Set Reminder
+									</button>
+								</div>
+							</div>
+						</div>
+
+						<!-- August 2025 Exam -->
+						<div class="exam-card">
+							<div class="exam-card-header">Sunday, August 24, 2025</div>
+							<div class="exam-card-body">
+								<h3 class="exam-card-title">
+									Civil Service Exam (Paper and Pencil Test)
+								</h3>
+
+								<div class="exam-card-badges">
+									<span class="exam-badge professional">Professional</span>
+									<span class="exam-badge sub-professional"
+										>Sub-Professional</span
+									>
+								</div>
+
+								<div class="registration-info">
+									<i class="fas fa-clock"></i>
+									<span class="registration-text"
+										>Registration Deadline: Thursday, July 24, 2025</span
+									>
+								</div>
+
+								<div class="testing-centers">
+									<h4 class="centers-title">Testing Centers:</h4>
+									<div class="centers-list">
+										<span class="center-tag">Nationwide</span>
+									</div>
+								</div>
+
+								<div class="exam-card-actions">
+									<button
+										class="action-btn primary"
+										onclick="showExamDetails('august')">
+										View Details
+									</button>
+									<button
+										class="action-btn secondary"
+										onclick="showReminderModal('august')">
+										Set Reminder
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+
+		<!-- Reminder Modal -->
+		<div class="modal" id="reminder-modal">
+			<div class="modal-content">
+				<h3 class="modal-title">Exam Reminder</h3>
+				<p class="modal-subtitle">
+					We'll send you reminders about this exam date
+				</p>
+
+				<form onsubmit="setReminder(event)">
+					<div class="form-group">
+						<label class="form-label">Email</label>
+						<input
+							type="email"
+							class="form-input"
+							placeholder="your@email.com"
+							required />
+					</div>
+
+					<button type="submit" class="modal-btn">Set Reminder</button>
+				</form>
+			</div>
+		</div>
+
+		<!-- Footer -->
+		<footer class="footer">
+			<div class="container">
+				<!-- Footer CTA -->
+				<div class="footer-cta">
+					<h3>Got a Project in Mind?</h3>
+					<p>
+						Need a custom system, mobile app, or web application developed? I
+						specialize in building high-quality, scalable solutions that bring
+						your ideas to life. Let's discuss your project!
+					</p>
+					<a href="#" class="facebook-btn">
+						<i class="fab fa-facebook"></i>
+						Contact Me on Facebook
+						<i
+							class="fas fa-check-circle"
+							style="color: #30d158; margin-left: 4px"></i>
+						<span style="font-size: 12px; margin-left: 4px">Verified</span>
+					</a>
+					<p class="facebook-note">
+						Facebook profile with blue verification badge
+					</p>
+				</div>
+
+				<!-- Footer Content -->
+				<div class="footer-content">
+					<div class="footer-section">
+						<h4>EksamCSC</h4>
+						<p>Helping candidates pass the Civil Service Examination.</p>
+					</div>
+
+					<div class="footer-section">
+						<h4>Quick Links</h4>
+						<ul class="footer-links">
+							<li><a href="practice.html">Free Practice Test</a></li>
+							<li><a href="calendar.html">Exam Calendar</a></li>
+						</ul>
+					</div>
+
+					<div class="footer-section">
+						<h4>Contact</h4>
+						<div class="contact-item">
+							<i class="fas fa-map-marker-alt"></i>
+							<span>Kalipayan Rd., Tacloban City, Leyte</span>
+						</div>
+						<div class="contact-item">
+							<i class="fas fa-envelope"></i>
+							<span>mcmontabon@gmail.com</span>
+						</div>
+						<div class="contact-item">
+							<i class="fas fa-phone"></i>
+							<span>09269815390</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- Footer Bottom -->
+				<div class="footer-bottom">
+					<p>&copy; 2025 EksamCSC. All rights reserved.</p>
+					<div class="footer-bottom-links">
+						<a href="#">Privacy Policy</a>
+						<a href="#">Terms of Service</a>
+						<a href="#" class="highlight">Developed by mcmontabon</a>
+					</div>
+				</div>
+			</div>
+		</footer>
+
+		<script src="script.js"></script>
+	</body>
+</html>
