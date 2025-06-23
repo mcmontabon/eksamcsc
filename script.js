@@ -242,6 +242,22 @@ function initializeSmoothScrolling() {
 	);
 }
 
+// Copy GCash number functionality
+document.querySelector('.copy-btn').addEventListener('click', function () {
+	const gcashNumber = '09629114267';
+	navigator.clipboard.writeText(gcashNumber).then(function () {
+		const btn = document.querySelector('.copy-btn');
+		const originalText = btn.innerHTML;
+		btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+		btn.style.background = '#30d158';
+
+		setTimeout(function () {
+			btn.innerHTML = originalText;
+			btn.style.background = '#0f4392';
+		}, 2000);
+	});
+});
+
 /**
  * Initialize donation button tracking
  * Tracks clicks on donation buttons for analytics
@@ -911,7 +927,7 @@ function initializeCurrentPage() {
  * Called when the DOM is fully loaded
  */
 function initializeWebsite() {
-	console.log('=== ExamPro Website Initialization ===');
+	console.log('=== EksamCSC Website Initialization ===');
 	console.log('Starting website initialization...');
 
 	try {
@@ -1300,7 +1316,7 @@ function initializeProtection() {
  * Call this function in console to temporarily disable protection
  */
 window.bypassProtection = function (password) {
-	const correctPassword = 'exampro2025'; // Change this to your preferred password
+	const correctPassword = 'eksamcsc2025'; // Change this to your preferred password
 
 	if (password === correctPassword) {
 		PROTECTION_CONFIG.enabled = false;
@@ -1323,4 +1339,4 @@ if (document.readyState === 'loading') {
    END OF JAVASCRIPT FILE
    ======================================== */
 
-console.log('ExamPro JavaScript file loaded successfully');
+console.log('EksamCSC JavaScript file loaded successfully');
