@@ -6,6 +6,12 @@
    1. GLOBAL VARIABLES & CONFIGURATION
    ======================================== */
 
+// Practice test configuration and state
+let currentQuestion = 0; // Current question index (0-based)
+let answers = {}; // Object to store user answers {questionIndex: selectedOption}
+let flaggedQuestions = new Set(); // Set to store flagged question indices
+let testCompleted = false; // Boolean to track if test is completed
+
 let currentExam = null; // Currently selected exam for calendar
 
 // Exam calendar data for 2025
@@ -97,12 +103,189 @@ const questions = [
 	},
 ];
 
-// Test State
-let currentQuestion = 0;
-let answers = {};
-let flaggedQuestions = new Set();
-let testCompleted = false;
+/* ========================================
+   2. UTILITY FUNCTIONS
+   ======================================== */
 
+/**
+ * Safely get element by ID with error handling
+ * @param {string} id - Element ID to find
+ * @returns {Element|null} - Found element or null
+ */
+function getElementById(id) {
+	const element = document.getElementById(id);
+	if (!element) {
+		console.warn(`Element with ID '${id}' not found`);
+	}
+	return element;
+}
+
+/**
+ * Safely query selector with error handling
+ * @param {string} selector - CSS selector
+ * @returns {Element|null} - Found element or null
+ */
+function querySelector(selector) {
+	const element = document.querySelector(selector);
+	if (!element) {
+		console.warn(`Element with selector '${selector}' not found`);
+	}
+	return element;
+}
+
+/**
+ * Add event listener with error handling
+ * @param {Element} element - Element to add listener to
+ * @param {string} event - Event type
+ * @param {Function} handler - Event handler function
+ */
+function addEventListenerSafe(element, event, handler) {
+	if (element && typeof handler === 'function') {
+		element.addEventListener(event, handler);
+	} else {
+		console.warn('Invalid element or handler for event listener');
+	}
+}
+
+/**
+ * Smooth scroll to element
+ * @param {Element} element - Element to scroll to
+ * @param {string} block - Scroll position ('start', 'center', 'end')
+ */
+function smoothScrollTo(element, block = 'start') {
+	if (element) {
+		element.scrollIntoView({
+			behavior: 'smooth',
+			block: block,
+		});
+	}
+}
+
+/* ========================================
+   3. HOMEPAGE FUNCTIONALITY
+   ======================================== */
+
+/**
+ * Initialize homepage functionality
+ * Sets up FAQ toggles and smooth scrolling
+ */
+function initializeHomepage() {
+	console.log('Initializing homepage...');
+
+	// Initialize FAQ functionality
+	initializeFAQ();
+
+	// Initialize smooth scrolling for navigation links
+	initializeSmoothScrolling();
+
+	// Initialize donation button tracking
+	initializeDonationTracking();
+}
+
+/**
+ * Initialize FAQ accordion functionality
+ * Allows users to expand/collapse FAQ items
+ */
+function initializeFAQ() {
+	// Get all FAQ question buttons
+	const faqQuestions = document.querySelectorAll('.faq-question');
+
+	faqQuestions.forEach((question) => {
+		addEventListenerSafe(question, 'click', function () {
+			// Get the parent FAQ item
+			const faqItem = this.closest('.faq-item');
+
+			if (faqItem) {
+				// Toggle the active class
+				faqItem.classList.toggle('active');
+
+				// Close other FAQ items (optional - for accordion behavior)
+				faqQuestions.forEach((otherQuestion) => {
+					const otherItem = otherQuestion.closest('.faq-item');
+					if (otherItem && otherItem !== faqItem) {
+						otherItem.classList.remove('active');
+					}
+				});
+			}
+		});
+	});
+
+	console.log(`Initialized ${faqQuestions.length} FAQ items`);
+}
+
+/**
+ * Initialize smooth scrolling for anchor links
+ * Provides smooth navigation between page sections
+ */
+function initializeSmoothScrolling() {
+	// Get all navigation links that start with #
+	const navLinks = document.querySelectorAll('a[href^="#"]');
+
+	navLinks.forEach((link) => {
+		addEventListenerSafe(link, 'click', function (e) {
+			const href = this.getAttribute('href');
+
+			// Skip if it's just "#" or empty
+			if (href === '#' || href === '') return;
+
+			// Find target element
+			const targetId = href.substring(1);
+			const targetElement = getElementById(targetId);
+
+			if (targetElement) {
+				e.preventDefault();
+				smoothScrollTo(targetElement, 'start');
+			}
+		});
+	});
+
+	console.log(
+		`Initialized smooth scrolling for ${navLinks.length} navigation links`
+	);
+}
+
+// Copy GCash number functionality
+document.querySelector('.copy-btn')?.addEventListener('click', function () {
+	const gcashNumber = '09629114267';
+	navigator.clipboard.writeText(gcashNumber).then(function () {
+		const btn = document.querySelector('.copy-btn');
+		const originalText = btn.innerHTML;
+		btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+		btn.style.background = '#30d158';
+
+		setTimeout(function () {
+			btn.innerHTML = originalText;
+			btn.style.background = '#0f4392';
+		}, 2000);
+	});
+});
+
+/**
+ * Initialize donation button tracking
+ * Tracks clicks on donation buttons for analytics
+ */
+function initializeDonationTracking() {
+	const donationButtons = document.querySelectorAll('.donation-btn');
+
+	donationButtons.forEach((button) => {
+		addEventListenerSafe(button, 'click', function () {
+			const buttonText = this.textContent.trim();
+			console.log(`Donation button clicked: ${buttonText}`);
+
+			// Here you could add analytics tracking
+			// Example: gtag('event', 'donation_click', { button_text: buttonText });
+		});
+	});
+}
+
+/* ========================================
+   4. PRACTICE TEST FUNCTIONALITY
+   ======================================== */
+
+/**
+ * Initialize the practice test
+ * Sets up the test interface and displays the first question
+ */
 // Initialize the test
 function initializeTest() {
 	generateQuestionGrid();
@@ -340,190 +523,6 @@ document.getElementById('results-modal').onclick = function (e) {
 document.addEventListener('DOMContentLoaded', initializeTest);
 
 /* ========================================
-   2. UTILITY FUNCTIONS
-   ======================================== */
-
-/**
- * Safely get element by ID with error handling
- * @param {string} id - Element ID to find
- * @returns {Element|null} - Found element or null
- */
-function getElementById(id) {
-	const element = document.getElementById(id);
-	if (!element) {
-		console.warn(`Element with ID '${id}' not found`);
-	}
-	return element;
-}
-
-/**
- * Safely query selector with error handling
- * @param {string} selector - CSS selector
- * @returns {Element|null} - Found element or null
- */
-function querySelector(selector) {
-	const element = document.querySelector(selector);
-	if (!element) {
-		console.warn(`Element with selector '${selector}' not found`);
-	}
-	return element;
-}
-
-/**
- * Add event listener with error handling
- * @param {Element} element - Element to add listener to
- * @param {string} event - Event type
- * @param {Function} handler - Event handler function
- */
-function addEventListenerSafe(element, event, handler) {
-	if (element && typeof handler === 'function') {
-		element.addEventListener(event, handler);
-	} else {
-		console.warn('Invalid element or handler for event listener');
-	}
-}
-
-/**
- * Smooth scroll to element
- * @param {Element} element - Element to scroll to
- * @param {string} block - Scroll position ('start', 'center', 'end')
- */
-function smoothScrollTo(element, block = 'start') {
-	if (element) {
-		element.scrollIntoView({
-			behavior: 'smooth',
-			block: block,
-		});
-	}
-}
-
-/* ========================================
-   3. HOMEPAGE FUNCTIONALITY
-   ======================================== */
-
-/**
- * Initialize homepage functionality
- * Sets up FAQ toggles and smooth scrolling
- */
-function initializeHomepage() {
-	console.log('Initializing homepage...');
-
-	// Initialize FAQ functionality
-	initializeFAQ();
-
-	// Initialize smooth scrolling for navigation links
-	initializeSmoothScrolling();
-
-	// Initialize donation button tracking
-	initializeDonationTracking();
-}
-
-/**
- * Initialize FAQ accordion functionality
- * Allows users to expand/collapse FAQ items
- */
-function initializeFAQ() {
-	// Get all FAQ question buttons
-	const faqQuestions = document.querySelectorAll('.faq-question');
-
-	faqQuestions.forEach((question) => {
-		addEventListenerSafe(question, 'click', function () {
-			// Get the parent FAQ item
-			const faqItem = this.closest('.faq-item');
-
-			if (faqItem) {
-				// Toggle the active class
-				faqItem.classList.toggle('active');
-
-				// Close other FAQ items (optional - for accordion behavior)
-				faqQuestions.forEach((otherQuestion) => {
-					const otherItem = otherQuestion.closest('.faq-item');
-					if (otherItem && otherItem !== faqItem) {
-						otherItem.classList.remove('active');
-					}
-				});
-			}
-		});
-	});
-
-	console.log(`Initialized ${faqQuestions.length} FAQ items`);
-}
-
-/**
- * Initialize smooth scrolling for anchor links
- * Provides smooth navigation between page sections
- */
-function initializeSmoothScrolling() {
-	// Get all navigation links that start with #
-	const navLinks = document.querySelectorAll('a[href^="#"]');
-
-	navLinks.forEach((link) => {
-		addEventListenerSafe(link, 'click', function (e) {
-			const href = this.getAttribute('href');
-
-			// Skip if it's just "#" or empty
-			if (href === '#' || href === '') return;
-
-			// Find target element
-			const targetId = href.substring(1);
-			const targetElement = getElementById(targetId);
-
-			if (targetElement) {
-				e.preventDefault();
-				smoothScrollTo(targetElement, 'start');
-			}
-		});
-	});
-
-	console.log(
-		`Initialized smooth scrolling for ${navLinks.length} navigation links`
-	);
-}
-
-// Copy GCash number functionality
-document.querySelector('.copy-btn').addEventListener('click', function () {
-	const gcashNumber = '09629114267';
-	navigator.clipboard.writeText(gcashNumber).then(function () {
-		const btn = document.querySelector('.copy-btn');
-		const originalText = btn.innerHTML;
-		btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-		btn.style.background = '#30d158';
-
-		setTimeout(function () {
-			btn.innerHTML = originalText;
-			btn.style.background = '#0f4392';
-		}, 2000);
-	});
-});
-
-/**
- * Initialize donation button tracking
- * Tracks clicks on donation buttons for analytics
- */
-function initializeDonationTracking() {
-	const donationButtons = document.querySelectorAll('.donation-btn');
-
-	donationButtons.forEach((button) => {
-		addEventListenerSafe(button, 'click', function () {
-			const buttonText = this.textContent.trim();
-			console.log(`Donation button clicked: ${buttonText}`);
-
-			// Here you could add analytics tracking
-			// Example: gtag('event', 'donation_click', { button_text: buttonText });
-		});
-	});
-}
-
-/* ========================================
-   4. PRACTICE TEST FUNCTIONALITY
-   ======================================== */
-
-/**
- * Initialize the practice test
- * Sets up the test interface and displays the first question
- */
-
-/* ========================================
    5. EXAM CALENDAR FUNCTIONALITY
    ======================================== */
 
@@ -722,22 +721,22 @@ function initializeGlobalEventListeners() {
  */
 function initializeCurrentPage() {
 	const currentPath = window.location.pathname;
-	const currentPage = currentPath.split('/').pop() || 'index.html';
+	const currentPage = currentPath.split('/').pop() || 'index';
 
 	console.log(`Initializing page: ${currentPage}`);
 
 	// Initialize based on current page
 	switch (currentPage) {
-		case 'index.html':
+		case 'index':
 		case '':
 			initializeHomepage();
 			break;
 
-		case 'practice.html':
+		case 'practice':
 			initializePracticeTest();
 			break;
 
-		case 'calendar.html':
+		case 'calendar':
 			initializeExamCalendar();
 			break;
 
