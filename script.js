@@ -1,20 +1,16 @@
 /* ========================================
-   EXAMPRO WEBSITE - UNIFIED JAVASCRIPT
+   EksamCSC WEBSITE - UNIFIED JAVASCRIPT
    ======================================== */
 
 /* ========================================
    1. GLOBAL VARIABLES & CONFIGURATION
    ======================================== */
 
-// Practice test configuration and state
-let currentQuestion = 0; // Current question index (0-based)
-let answers = {}; // Object to store user answers {questionIndex: selectedOption}
-let flaggedQuestions = new Set(); // Set to store flagged question indices
-let testCompleted = false; // Boolean to track if test is completed
 let currentExam = null; // Currently selected exam for calendar
 
 // CSC Exam Questions Database
 // This contains all the practice test questions with their options and correct answers
+// CSC Exam Questions Database
 const questions = [
 	{
 		id: 1,
@@ -27,7 +23,7 @@ const questions = [
 			{label: 'C', text: 'Commission on Higher Education (CHED)'},
 			{label: 'D', text: 'Professional Regulation Commission (PRC)'},
 		],
-		correctAnswer: 'B', // CSC is the correct answer
+		correctAnswer: 'B',
 	},
 	{
 		id: 2,
@@ -39,7 +35,7 @@ const questions = [
 			{label: 'C', text: '1987 Philippine Constitution'},
 			{label: 'D', text: 'Administrative Code'},
 		],
-		correctAnswer: 'C', // 1987 Constitution is the supreme law
+		correctAnswer: 'C',
 	},
 	{
 		id: 3,
@@ -51,7 +47,7 @@ const questions = [
 			{label: 'C', text: '7'},
 			{label: 'D', text: '15'},
 		],
-		correctAnswer: 'B', // 3x = 15, so x = 5
+		correctAnswer: 'B',
 	},
 	{
 		id: 4,
@@ -63,7 +59,7 @@ const questions = [
 			{label: 'C', text: 'The team were playing well today.'},
 			{label: 'D', text: 'The team have playing well today.'},
 		],
-		correctAnswer: 'B', // "Team" is singular, so "is" is correct
+		correctAnswer: 'B',
 	},
 	{
 		id: 5,
@@ -75,9 +71,251 @@ const questions = [
 			{label: 'C', text: 'Pagkakalito'},
 			{label: 'D', text: 'Pagkakaiba'},
 		],
-		correctAnswer: 'B', // Pagkakaisa means unity
+		correctAnswer: 'B',
 	},
 ];
+
+// Test State
+let currentQuestion = 0;
+let answers = {};
+let flaggedQuestions = new Set();
+let testCompleted = false;
+
+// Initialize the test
+function initializeTest() {
+	generateQuestionGrid();
+	displayQuestion();
+	updateProgress();
+	updateNavigation();
+}
+
+// Generate question number grid
+function generateQuestionGrid() {
+	const grid = document.getElementById('question-grid');
+	grid.innerHTML = '';
+
+	questions.forEach((_, index) => {
+		const questionNum = document.createElement('div');
+		questionNum.className = 'question-number unanswered';
+		questionNum.textContent = index + 1;
+		questionNum.onclick = () => goToQuestion(index);
+		grid.appendChild(questionNum);
+	});
+}
+
+// Display current question
+function displayQuestion() {
+	const question = questions[currentQuestion];
+
+	// Update question info
+	document.getElementById('question-badge').textContent =
+		`Question ${currentQuestion + 1}/${questions.length}`;
+	document.getElementById('question-category').textContent = question.category;
+	document.getElementById('question-text').textContent = question.question;
+
+	// Update flag button
+	const flagBtn = document.getElementById('flag-btn');
+	const flagText = document.getElementById('flag-text');
+	if (flaggedQuestions.has(currentQuestion)) {
+		flagBtn.classList.add('flagged');
+		flagText.textContent = 'Flagged for review';
+	} else {
+		flagBtn.classList.remove('flagged');
+		flagText.textContent = 'Flag for review';
+	}
+
+	// Generate options
+	const optionsContainer = document.getElementById('options');
+	optionsContainer.innerHTML = '';
+
+	question.options.forEach((option) => {
+		const optionDiv = document.createElement('div');
+		optionDiv.className = 'option';
+		if (answers[currentQuestion] === option.label) {
+			optionDiv.classList.add('selected');
+		}
+
+		optionDiv.innerHTML = `
+                    <div class="option-radio"></div>
+                    <span class="option-label">${option.label}.</span>
+                    <span class="option-text">${option.text}</span>
+                `;
+
+		optionDiv.onclick = () => selectOption(option.label);
+		optionsContainer.appendChild(optionDiv);
+	});
+
+	updateQuestionStates();
+}
+
+// Select an option
+function selectOption(label) {
+	answers[currentQuestion] = label;
+	displayQuestion();
+	updateProgress();
+	updateNavigation();
+}
+
+// Go to specific question
+function goToQuestion(index) {
+	if (index >= 0 && index < questions.length) {
+		currentQuestion = index;
+		displayQuestion();
+		updateNavigation();
+	}
+}
+
+// Update question states in grid
+function updateQuestionStates() {
+	const questionNumbers = document.querySelectorAll('.question-number');
+	questionNumbers.forEach((num, index) => {
+		num.className = 'question-number';
+
+		if (index === currentQuestion) {
+			num.classList.add('current');
+		} else if (answers[index]) {
+			num.classList.add('answered');
+		} else {
+			num.classList.add('unanswered');
+		}
+
+		if (flaggedQuestions.has(index)) {
+			num.classList.add('flagged');
+		}
+	});
+}
+
+// Update progress bar and counters
+function updateProgress() {
+	const answeredCount = Object.keys(answers).length;
+	const totalQuestions = questions.length;
+	const progressPercentage = (answeredCount / totalQuestions) * 100;
+
+	document.getElementById('answered-count').textContent = answeredCount;
+	document.getElementById('total-questions').textContent = totalQuestions;
+	document.getElementById('completion-count').textContent = answeredCount;
+	document.getElementById('completion-total').textContent = totalQuestions;
+	document.getElementById('progress-fill').style.width =
+		`${progressPercentage}%`;
+
+	// Enable/disable complete button
+	const completeBtn = document.getElementById('complete-btn');
+	if (answeredCount === totalQuestions) {
+		completeBtn.disabled = false;
+		completeBtn.textContent = `Complete Test (${answeredCount}/${totalQuestions})`;
+	} else {
+		completeBtn.disabled = true;
+		completeBtn.textContent = `Answer all questions (${answeredCount}/${totalQuestions})`;
+	}
+}
+
+// Update navigation buttons
+function updateNavigation() {
+	const prevBtn = document.getElementById('prev-btn');
+	const nextBtn = document.getElementById('next-btn');
+
+	prevBtn.disabled = currentQuestion === 0;
+
+	if (currentQuestion === questions.length - 1) {
+		nextBtn.textContent = 'Finish';
+		nextBtn.innerHTML = 'Finish <i class="fas fa-check"></i>';
+	} else {
+		nextBtn.innerHTML = 'Next <i class="fas fa-chevron-right"></i>';
+	}
+}
+
+// Navigation functions
+function previousQuestion() {
+	if (currentQuestion > 0) {
+		currentQuestion--;
+		displayQuestion();
+		updateNavigation();
+	}
+}
+
+function nextQuestion() {
+	if (currentQuestion < questions.length - 1) {
+		currentQuestion++;
+		displayQuestion();
+		updateNavigation();
+	} else {
+		// Last question - show completion prompt
+		if (Object.keys(answers).length === questions.length) {
+			completeTest();
+		} else {
+			alert('Please answer all questions before completing the test.');
+		}
+	}
+}
+
+// Toggle flag for current question
+function toggleFlag() {
+	if (flaggedQuestions.has(currentQuestion)) {
+		flaggedQuestions.delete(currentQuestion);
+	} else {
+		flaggedQuestions.add(currentQuestion);
+	}
+	displayQuestion();
+}
+
+// Complete the test
+function completeTest() {
+	if (Object.keys(answers).length !== questions.length) {
+		alert('Please answer all questions before completing the test.');
+		return;
+	}
+
+	// Calculate score
+	let correctAnswers = 0;
+	questions.forEach((question, index) => {
+		if (answers[index] === question.correctAnswer) {
+			correctAnswers++;
+		}
+	});
+
+	// Show results modal
+	document.getElementById('final-score').textContent =
+		`${correctAnswers}/${questions.length}`;
+	document.getElementById('correct-answers').textContent = correctAnswers;
+	document.getElementById('total-answers').textContent = questions.length;
+	document.getElementById('results-modal').classList.add('show');
+
+	testCompleted = true;
+}
+
+// Review answers (placeholder function)
+function reviewAnswers() {
+	document.getElementById('results-modal').classList.remove('show');
+	// Could implement a review mode here
+	alert('Review mode would show correct answers and explanations.');
+}
+
+// Restart test
+function restartTest() {
+	currentQuestion = 0;
+	answers = {};
+	flaggedQuestions.clear();
+	testCompleted = false;
+
+	document.getElementById('results-modal').classList.remove('show');
+	initializeTest();
+}
+
+// Event listeners
+document.getElementById('prev-btn').onclick = previousQuestion;
+document.getElementById('next-btn').onclick = nextQuestion;
+document.getElementById('flag-btn').onclick = toggleFlag;
+document.getElementById('complete-btn').onclick = completeTest;
+
+// Close modal when clicking outside
+document.getElementById('results-modal').onclick = function (e) {
+	if (e.target === this) {
+		this.classList.remove('show');
+	}
+};
+
+// Initialize the test when page loads
+document.addEventListener('DOMContentLoaded', initializeTest);
 
 // Exam calendar data for 2025
 // Contains information about upcoming Civil Service Examinations
@@ -284,421 +522,6 @@ function initializeDonationTracking() {
  * Initialize the practice test
  * Sets up the test interface and displays the first question
  */
-function initializePracticeTest() {
-	console.log('Initializing practice test...');
-
-	// Reset test state
-	currentQuestion = 0;
-	answers = {};
-	flaggedQuestions.clear();
-	testCompleted = false;
-
-	// Generate the question number grid
-	generateQuestionGrid();
-
-	// Display the first question
-	displayQuestion();
-
-	// Update progress indicators
-	updateProgress();
-
-	// Update navigation buttons
-	updateNavigation();
-
-	// Set up event listeners
-	setupPracticeTestEventListeners();
-
-	console.log(`Practice test initialized with ${questions.length} questions`);
-}
-
-/**
- * Generate the question number grid in the sidebar
- * Creates clickable numbers for each question
- */
-function generateQuestionGrid() {
-	const grid = getElementById('question-grid');
-	if (!grid) return;
-
-	// Clear existing grid
-	grid.innerHTML = '';
-
-	// Create a number button for each question
-	questions.forEach((_, index) => {
-		const questionNum = document.createElement('div');
-		questionNum.className = 'question-number unanswered';
-		questionNum.textContent = index + 1;
-		questionNum.onclick = () => goToQuestion(index);
-		grid.appendChild(questionNum);
-	});
-
-	console.log(`Generated question grid with ${questions.length} questions`);
-}
-
-/**
- * Display the current question and its options
- * Updates all question-related UI elements
- */
-function displayQuestion() {
-	const question = questions[currentQuestion];
-	if (!question) return;
-
-	console.log(
-		`Displaying question ${currentQuestion + 1}: ${question.category}`
-	);
-
-	// Update question info
-	const questionBadge = getElementById('question-badge');
-	const questionCategory = getElementById('question-category');
-	const questionText = getElementById('question-text');
-
-	if (questionBadge) {
-		questionBadge.textContent = `Question ${currentQuestion + 1}/${questions.length}`;
-	}
-
-	if (questionCategory) {
-		questionCategory.textContent = question.category;
-	}
-
-	if (questionText) {
-		questionText.textContent = question.question;
-	}
-
-	// Update flag button state
-	updateFlagButton();
-
-	// Generate and display options
-	generateOptions(question);
-
-	// Update question states in the grid
-	updateQuestionStates();
-}
-
-/**
- * Update the flag button based on current question's flag status
- */
-function updateFlagButton() {
-	const flagBtn = getElementById('flag-btn');
-	const flagText = getElementById('flag-text');
-
-	if (flagBtn && flagText) {
-		if (flaggedQuestions.has(currentQuestion)) {
-			flagBtn.classList.add('flagged');
-			flagText.textContent = 'Flagged for review';
-		} else {
-			flagBtn.classList.remove('flagged');
-			flagText.textContent = 'Flag for review';
-		}
-	}
-}
-
-/**
- * Generate and display answer options for the current question
- * @param {Object} question - Question object containing options
- */
-function generateOptions(question) {
-	const optionsContainer = getElementById('options');
-	if (!optionsContainer) return;
-
-	// Clear existing options
-	optionsContainer.innerHTML = '';
-
-	// Create option elements
-	question.options.forEach((option) => {
-		const optionDiv = document.createElement('div');
-		optionDiv.className = 'option';
-
-		// Check if this option is selected
-		if (answers[currentQuestion] === option.label) {
-			optionDiv.classList.add('selected');
-		}
-
-		// Create option HTML structure
-		optionDiv.innerHTML = `
-            <div class="option-radio"></div>
-            <span class="option-label">${option.label}.</span>
-            <span class="option-text">${option.text}</span>
-        `;
-
-		// Add click handler to select this option
-		optionDiv.onclick = () => selectOption(option.label);
-		optionsContainer.appendChild(optionDiv);
-	});
-}
-
-/**
- * Select an answer option for the current question
- * @param {string} label - The selected option label (A, B, C, D)
- */
-function selectOption(label) {
-	console.log(`Selected option ${label} for question ${currentQuestion + 1}`);
-
-	// Store the answer
-	answers[currentQuestion] = label;
-
-	// Refresh the display to show selection
-	displayQuestion();
-
-	// Update progress indicators
-	updateProgress();
-
-	// Update navigation buttons
-	updateNavigation();
-}
-
-/**
- * Navigate to a specific question by index
- * @param {number} index - Question index to navigate to
- */
-function goToQuestion(index) {
-	if (index >= 0 && index < questions.length) {
-		console.log(`Navigating to question ${index + 1}`);
-		currentQuestion = index;
-		displayQuestion();
-		updateNavigation();
-	}
-}
-
-/**
- * Update the visual states of question numbers in the grid
- * Shows which questions are answered, current, flagged, etc.
- */
-function updateQuestionStates() {
-	const questionNumbers = document.querySelectorAll('.question-number');
-
-	questionNumbers.forEach((num, index) => {
-		// Reset all classes
-		num.className = 'question-number';
-
-		// Apply appropriate state class
-		if (index === currentQuestion) {
-			num.classList.add('current');
-		} else if (answers[index]) {
-			num.classList.add('answered');
-		} else {
-			num.classList.add('unanswered');
-		}
-
-		// Add flagged class if question is flagged
-		if (flaggedQuestions.has(index)) {
-			num.classList.add('flagged');
-		}
-	});
-}
-
-/**
- * Update progress bar and completion counters
- * Shows how many questions have been answered
- */
-function updateProgress() {
-	const answeredCount = Object.keys(answers).length;
-	const totalQuestions = questions.length;
-	const progressPercentage = (answeredCount / totalQuestions) * 100;
-
-	// Update progress text
-	const answeredCountEl = getElementById('answered-count');
-	const totalQuestionsEl = getElementById('total-questions');
-	const completionCountEl = getElementById('completion-count');
-	const completionTotalEl = getElementById('completion-total');
-
-	if (answeredCountEl) answeredCountEl.textContent = answeredCount;
-	if (totalQuestionsEl) totalQuestionsEl.textContent = totalQuestions;
-	if (completionCountEl) completionCountEl.textContent = answeredCount;
-	if (completionTotalEl) completionTotalEl.textContent = totalQuestions;
-
-	// Update progress bar
-	const progressFill = getElementById('progress-fill');
-	if (progressFill) {
-		progressFill.style.width = `${progressPercentage}%`;
-	}
-
-	// Update complete button state
-	const completeBtn = getElementById('complete-btn');
-	if (completeBtn) {
-		if (answeredCount === totalQuestions) {
-			completeBtn.disabled = false;
-			completeBtn.textContent = `Complete Test (${answeredCount}/${totalQuestions})`;
-		} else {
-			completeBtn.disabled = true;
-			completeBtn.textContent = `Answer all questions (${answeredCount}/${totalQuestions})`;
-		}
-	}
-
-	console.log(
-		`Progress updated: ${answeredCount}/${totalQuestions} questions answered`
-	);
-}
-
-/**
- * Update navigation button states
- * Enables/disables previous/next buttons and changes text
- */
-function updateNavigation() {
-	const prevBtn = getElementById('prev-btn');
-	const nextBtn = getElementById('next-btn');
-
-	if (prevBtn) {
-		prevBtn.disabled = currentQuestion === 0;
-	}
-
-	if (nextBtn) {
-		if (currentQuestion === questions.length - 1) {
-			nextBtn.innerHTML = 'Finish <i class="fas fa-check"></i>';
-		} else {
-			nextBtn.innerHTML = 'Next <i class="fas fa-chevron-right"></i>';
-		}
-	}
-}
-
-/**
- * Navigate to the previous question
- */
-function previousQuestion() {
-	if (currentQuestion > 0) {
-		currentQuestion--;
-		displayQuestion();
-		updateNavigation();
-		console.log(`Moved to previous question: ${currentQuestion + 1}`);
-	}
-}
-
-/**
- * Navigate to the next question or finish test
- */
-function nextQuestion() {
-	if (currentQuestion < questions.length - 1) {
-		currentQuestion++;
-		displayQuestion();
-		updateNavigation();
-		console.log(`Moved to next question: ${currentQuestion + 1}`);
-	} else {
-		// Last question - attempt to complete test
-		if (Object.keys(answers).length === questions.length) {
-			completeTest();
-		} else {
-			alert('Please answer all questions before completing the test.');
-		}
-	}
-}
-
-/**
- * Toggle flag status for the current question
- */
-function toggleFlag() {
-	if (flaggedQuestions.has(currentQuestion)) {
-		flaggedQuestions.delete(currentQuestion);
-		console.log(`Unflagged question ${currentQuestion + 1}`);
-	} else {
-		flaggedQuestions.add(currentQuestion);
-		console.log(`Flagged question ${currentQuestion + 1} for review`);
-	}
-
-	// Refresh display to show flag status
-	displayQuestion();
-}
-
-/**
- * Complete the practice test and show results
- */
-function completeTest() {
-	if (Object.keys(answers).length !== questions.length) {
-		alert('Please answer all questions before completing the test.');
-		return;
-	}
-
-	console.log('Completing practice test...');
-
-	// Calculate score by comparing answers with correct answers
-	let correctAnswers = 0;
-	questions.forEach((question, index) => {
-		if (answers[index] === question.correctAnswer) {
-			correctAnswers++;
-		}
-	});
-
-	console.log(`Test completed. Score: ${correctAnswers}/${questions.length}`);
-
-	// Update results modal with score
-	const finalScoreEl = getElementById('final-score');
-	const correctAnswersEl = getElementById('correct-answers');
-	const totalAnswersEl = getElementById('total-answers');
-
-	if (finalScoreEl)
-		finalScoreEl.textContent = `${correctAnswers}/${questions.length}`;
-	if (correctAnswersEl) correctAnswersEl.textContent = correctAnswers;
-	if (totalAnswersEl) totalAnswersEl.textContent = questions.length;
-
-	// Show results modal
-	const resultsModal = getElementById('results-modal');
-	if (resultsModal) {
-		resultsModal.classList.add('show');
-	}
-
-	testCompleted = true;
-}
-
-/**
- * Review answers (placeholder for future implementation)
- */
-function reviewAnswers() {
-	const resultsModal = getElementById('results-modal');
-	if (resultsModal) {
-		resultsModal.classList.remove('show');
-	}
-
-	// Future: Implement review mode showing correct/incorrect answers
-	alert('Review mode would show correct answers and explanations.');
-	console.log('Review answers functionality called');
-}
-
-/**
- * Restart the practice test
- */
-function restartTest() {
-	console.log('Restarting practice test...');
-
-	// Reset all test state
-	currentQuestion = 0;
-	answers = {};
-	flaggedQuestions.clear();
-	testCompleted = false;
-
-	// Hide results modal
-	const resultsModal = getElementById('results-modal');
-	if (resultsModal) {
-		resultsModal.classList.remove('show');
-	}
-
-	// Reinitialize the test
-	initializePracticeTest();
-}
-
-/**
- * Set up event listeners for practice test functionality
- */
-function setupPracticeTestEventListeners() {
-	// Navigation buttons
-	const prevBtn = getElementById('prev-btn');
-	const nextBtn = getElementById('next-btn');
-	const flagBtn = getElementById('flag-btn');
-	const completeBtn = getElementById('complete-btn');
-
-	if (prevBtn) prevBtn.onclick = previousQuestion;
-	if (nextBtn) nextBtn.onclick = nextQuestion;
-	if (flagBtn) flagBtn.onclick = toggleFlag;
-	if (completeBtn) completeBtn.onclick = completeTest;
-
-	// Modal close functionality
-	const resultsModal = getElementById('results-modal');
-	if (resultsModal) {
-		resultsModal.onclick = function (e) {
-			if (e.target === this) {
-				this.classList.remove('show');
-			}
-		};
-	}
-
-	console.log('Practice test event listeners set up');
-}
 
 /* ========================================
    5. EXAM CALENDAR FUNCTIONALITY
@@ -729,6 +552,12 @@ function showExamDetails(examKey) {
 
 	console.log(`Showing details for ${examKey} exam`);
 	currentExam = examKey;
+
+	// Get the paragraph element by ID
+	const subtitle = document.getElementById('subtitle-text');
+
+	// Change the text content
+	subtitle.textContent = 'Information about the selected exam date';
 
 	// Hide empty state and show details
 	const emptyState = getElementById('empty-state');
@@ -899,16 +728,16 @@ function initializeCurrentPage() {
 
 	// Initialize based on current page
 	switch (currentPage) {
-		case 'index.html':
+		case 'index':
 		case '':
 			initializeHomepage();
 			break;
 
-		case 'practice.html':
+		case 'practice':
 			initializePracticeTest();
 			break;
 
-		case 'calendar.html':
+		case 'calendar':
 			initializeExamCalendar();
 			break;
 

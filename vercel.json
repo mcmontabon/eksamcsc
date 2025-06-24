@@ -1,0 +1,33 @@
+{
+	"rewrites": [
+		{
+			"source": "/",
+			"destination": "/index.html"
+		},
+		{
+			"source": "/practice",
+			"destination": "/practice.html"
+		},
+		{
+			"source": "/calendar",
+			"destination": "/calendar.html"
+		}
+	],
+	"redirects": [
+		{
+			"source": "/index.html",
+			"destination": "/",
+			"permanent": true
+		},
+		{
+			"source": "/practice.html",
+			"destination": "/practice",
+			"permanent": true
+		},
+		{
+			"source": "/calendar.html",
+			"destination": "/calendar",
+			"permanent": true
+		}
+	]
+}
