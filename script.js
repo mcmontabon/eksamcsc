@@ -8,6 +8,28 @@
 
 let currentExam = null; // Currently selected exam for calendar
 
+// Exam calendar data for 2025
+// Contains information about upcoming Civil Service Examinations
+const examData = {
+	july: {
+		title: 'Civil Service Computerized Examination (CSC-COMEX)',
+		date: 'Tuesday | Thursday, July 1, 3, 8, 10, 2025',
+		deadline: 'Registration Status: On-going',
+		countdown: 'Until slots are filled',
+		locations: ['CSC Regional Office VIII'],
+		description: '3rd QUARTER 2025 SCHEDULE',
+	},
+	august: {
+		title: 'Civil Service Exam (Paper and Pencil Test)',
+		date: 'Sunday, August 24, 2025',
+		deadline: 'Application Deadline: Thursday, July 24, 2025',
+		countdown: '32 days remaining to apply',
+		locations: ['Nationwide (CSC Regional Offices)'],
+		description:
+			'Second nationwide schedule for the Civil Service Examination for 2025. Both Professional and Sub-Professional level examinations will be conducted. Application must be completed one month before the examination date.',
+	},
+};
+
 // CSC Exam Questions Database
 // This contains all the practice test questions with their options and correct answers
 // CSC Exam Questions Database
@@ -316,28 +338,6 @@ document.getElementById('results-modal').onclick = function (e) {
 
 // Initialize the test when page loads
 document.addEventListener('DOMContentLoaded', initializeTest);
-
-// Exam calendar data for 2025
-// Contains information about upcoming Civil Service Examinations
-const examData = {
-	july: {
-		title: 'Civil Service Computerized Examination (CSC-COMEX)',
-		date: 'Tuesday | Thursday, July 1, 3, 8, 10, 2025',
-		deadline: 'Registration Status: On-going',
-		countdown: 'Until slots are filled',
-		locations: ['CSC Regional Office VIII'],
-		description: '3rd QUARTER 2025 SCHEDULE',
-	},
-	august: {
-		title: 'Civil Service Exam (Paper and Pencil Test)',
-		date: 'Sunday, August 24, 2025',
-		deadline: 'Application Deadline: Thursday, July 24, 2025',
-		countdown: '32 days remaining to apply',
-		locations: ['Nationwide (CSC Regional Offices)'],
-		description:
-			'Second nationwide schedule for the Civil Service Examination for 2025. Both Professional and Sub-Professional level examinations will be conducted. Application must be completed one month before the examination date.',
-	},
-};
 
 /* ========================================
    2. UTILITY FUNCTIONS
@@ -728,16 +728,16 @@ function initializeCurrentPage() {
 
 	// Initialize based on current page
 	switch (currentPage) {
-		case 'index':
+		case 'index.html':
 		case '':
 			initializeHomepage();
 			break;
 
-		case 'practice':
+		case 'practice.html':
 			initializePracticeTest();
 			break;
 
-		case 'calendar':
+		case 'calendar.html':
 			initializeExamCalendar();
 			break;
 
