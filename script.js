@@ -507,17 +507,59 @@ function restartTest() {
 }
 
 // Event listeners
-document.getElementById('prev-btn').onclick = previousQuestion;
-document.getElementById('next-btn').onclick = nextQuestion;
-document.getElementById('flag-btn').onclick = toggleFlag;
-document.getElementById('complete-btn').onclick = completeTest;
+//document.getElementById('prev-btn').onclick = previousQuestion;
+//document.getElementById('next-btn').onclick = nextQuestion;
+//document.getElementById('flag-btn').onclick = toggleFlag;
+//document.getElementById('complete-btn').onclick = completeTest;
+
+function initializeTest() {
+	generateQuestionGrid();
+	displayQuestion();
+	updateProgress();
+	updateNavigation();
+
+	// Add event listeners safely
+	const prevBtn = document.getElementById('prev-btn');
+	const nextBtn = document.getElementById('next-btn');
+	const flagBtn = document.getElementById('flag-btn');
+	const completeBtn = document.getElementById('complete-btn');
+	const resultsModal = document.getElementById('results-modal');
+
+	if (prevBtn) prevBtn.onclick = previousQuestion;
+	if (nextBtn) nextBtn.onclick = nextQuestion;
+	if (flagBtn) flagBtn.onclick = toggleFlag;
+	if (completeBtn) completeBtn.onclick = completeTest;
+	if (resultsModal) {
+		resultsModal.onclick = function (e) {
+			if (e.target === this) {
+				this.classList.remove('show');
+			}
+		};
+	}
+}
 
 // Close modal when clicking outside
-document.getElementById('results-modal').onclick = function (e) {
+/* document.getElementById('results-modal').onclick = function (e) {
 	if (e.target === this) {
 		this.classList.remove('show');
 	}
-};
+}; */
+// ...existing code...
+
+// Close modal when clicking outside
+const resultsModal = document.getElementById('results-modal');
+if (resultsModal) {
+	resultsModal.onclick = function (e) {
+		if (e.target === this) {
+			this.classList.remove('show');
+		}
+	};
+}
+
+// Initialize the test when page loads
+document.addEventListener('DOMContentLoaded', initializeWebsite);
+
+// ...existing code...
 
 // Initialize the test when page loads
 document.addEventListener('DOMContentLoaded', initializeTest);
